@@ -1,6 +1,7 @@
 from flask import Flask, render_template, session, redirect, url_for, flash
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user
 from flask_migrate import Migrate
 
@@ -26,6 +27,9 @@ login_manager.login_view = 'login'
 admin = Admin(app)
 admin.add_view(ModelView(User, db.session))
 
+
+# Flask Bootstrap
+Bootstrap(app)
 
 @login_manager.user_loader
 def load_user(user_id):
