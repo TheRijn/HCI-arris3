@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, DateField
-from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, DateField, IntegerField, FloatField
+from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, NumberRange
 
 from models import User
 
@@ -29,5 +29,12 @@ class ProfileForm(FlaskForm):
     first_name = StringField('First Name')
     last_name = StringField('Last Name')
     birthday = DateField('Birthday')
+    height = IntegerField('Height', validators=[NumberRange(100, 250, 'Please enter your height in cm.')])
 
     submit = SubmitField('Update')
+
+
+class AddWeightForm(FlaskForm):
+    weight = FloatField("Weight", validators=[NumberRange(0, 300, 'Please enter your weight in kg.')], )
+
+    submit = SubmitField('Submit')

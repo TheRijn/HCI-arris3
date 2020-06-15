@@ -1,12 +1,12 @@
-from flask import Flask, render_template, session, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user
 from flask_migrate import Migrate
 
-from forms import LoginForm, RegistrationForm, ProfileForm
-from models import db, User
+from forms import LoginForm, RegistrationForm, ProfileForm, AddWeightForm
+from models import db, User, Weight
 
 app = Flask(__name__)
 
@@ -26,18 +26,29 @@ login_manager.login_view = 'login'
 # Flask-admin
 admin = Admin(app)
 admin.add_view(ModelView(User, db.session))
-
+admin.add_view(ModelView(Weight, db.session))
 
 # Flask Bootstrap
 Bootstrap(app)
+
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+
+@app.template_filter('formatdate')
+def format_date(value, format="%d %B %Y"):
+    """Format a date time to (Default): d Mon YYYY"""
+    if value is None:
+        return ""
+    return value.strftime(format)
+
+
 @app.route('/')
 def home():
     return render_template('home.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -78,6 +89,7 @@ def register():
 
     return render_template('register.html', title='Register', form=form)
 
+
 @app.route('/logout')
 @login_required
 def logout():
@@ -85,9 +97,15 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/profile', methods=["GET", "POST"])
+@app.route('/profile')
 @login_required
 def profile():
+    return render_template('profile.html')
+
+
+@app.route('/profile/edit', methods=["GET", "POST"])
+@login_required
+def edit_profile():
     form = ProfileForm(obj=current_user)
 
     if form.validate_on_submit():
@@ -96,15 +114,34 @@ def profile():
         user.first_name = form.first_name.data
         user.last_name = form.last_name.data
         user.birthday = form.birthday.data
+        user.height = form.height.data
 
         db.session.add(user)
         db.session.commit()
 
         flash('Profile updated!')
-        return redirect(url_for('home'))
+        return redirect(url_for('profile'))
+
+    return render_template('edit_profile.html', form=form)
 
 
-    return render_template('profile.html', form=form)
+@app.route('/profile/add-weight', methods=['GET', 'POST'])
+@login_required
+def add_weight():
+    form = AddWeightForm()
+
+    if form.validate_on_submit():
+        weight = Weight(form.weight.data)
+        weight.user = current_user
+
+        db.session.add(weight)
+        db.session.commit()
+
+        flash("Weight added")
+        return redirect(url_for('profile'))
+
+    return render_template('add_weight.html', form=form)
+
 
 if __name__ == "__main__":
     app.run()

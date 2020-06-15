@@ -1,9 +1,29 @@
 {% extends 'base.html' %}
-{% import "bootstrap/wtf.html" as wtf %}
-
-{% block title %}Profile{% endblock %}
+{% block title %}
+    Profile
+{% endblock %}
 
 {% block main %}
-    <h1>Edit Profile</h1>
-    {{ wtf.quick_form(form, button_map={'submit':'primary'}) }}
+    <h1>Profile</h1>
+    <h6>Name:</h6>
+    <p>
+    {{ current_user.first_name }} {{ current_user.last_name }}
+    </p>
+    <h6>Birthday:</h6>
+    <p>
+    {{ current_user.birthday | formatdate }}
+    </p>
+    <h6>Height</h6>
+    <p>
+    {{ current_user.height }} cm
+    </p>
+    <h6>Weight</h6>
+    <p>
+        {{ current_user.current_weight().weight }} kg
+    </p>
+    <p>
+        <a href="{{ url_for('edit_profile') }}" class="btn btn-secondary">Edit Profile</a>
+        <a href="{{ url_for('add_weight') }}" class="btn btn-primary">Add new weight</a>
+
+    </p>
 {% endblock %}
