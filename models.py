@@ -22,3 +22,15 @@ class User(db.Model, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.__password_hash, password)
+
+class Ingredient(db.Model):
+    __tablename__ = 'Ingredients'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), unique=True, nullable=False)
+    kcal_per_100_gram = db.Column(db.Integer)
+
+class Exercise(db.Model):
+    __tablename__ = 'Exercise'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), unique=True, nullable=False)
+    kcal_per_rep = db.Column(db.Integer)
