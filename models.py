@@ -12,6 +12,7 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(120))
     last_name = db.Column(db.String(120))
     birthday = db.Column(db.Date)
+    points = db.Column(db.Integer)
 
     def __init__(self, email):
         self.email = email
