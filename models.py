@@ -1,8 +1,11 @@
+import datetime
+
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
+
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -12,6 +15,8 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(120))
     last_name = db.Column(db.String(120))
     birthday = db.Column(db.Date)
+    height = db.Column(db.Integer)
+    weights = db.relationship('Weight', back_populates='user', order_by='desc(Weight.date)')
     points = db.Column(db.Integer)
 
     def __init__(self, email):
@@ -24,11 +29,32 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.__password_hash, password)
 
+    def current_weight(self):
+        return self.weights[0]
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+
+class Weight(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User', back_populates='weights')
+
+    date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    weight = db.Column(db.Numeric(scale=2))
+
+    def __init__(self, weight):
+        self.weight = weight
+
+
 class Ingredient(db.Model):
     __tablename__ = 'Ingredients'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=True, nullable=False)
     kcal_per_100_gram = db.Column(db.Integer)
+
 
 class Exercise(db.Model):
     __tablename__ = 'Exercise'
