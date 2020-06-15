@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  web:
+    build: .
+    command: gunicorn app:app -b 0.0.0.0:8080
+#    command: sh
+    volumes:
+    - ./db:/app/db
+    ports:
+    - 8089:8080

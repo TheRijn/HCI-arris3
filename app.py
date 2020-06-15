@@ -5,7 +5,7 @@ from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user
 from flask_migrate import Migrate
 
-from forms import LoginForm, RegistrationForm
+from forms import LoginForm, RegistrationForm, ProfileForm
 from models import db, User
 
 app = Flask(__name__)
@@ -13,7 +13,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = "this-is-really-secret"
 
 # Setup db and migrations
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -42,7 +42,7 @@ def home():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('home'))
 
     form = LoginForm()
 
@@ -83,6 +83,28 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+
+@app.route('/profile', methods=["GET", "POST"])
+@login_required
+def profile():
+    form = ProfileForm(obj=current_user)
+
+    if form.validate_on_submit():
+        user: User = current_user
+
+        user.first_name = form.first_name.data
+        user.last_name = form.last_name.data
+        user.birthday = form.birthday.data
+
+        db.session.add(user)
+        db.session.commit()
+
+        flash('Profile updated!')
+        return redirect(url_for('home'))
+
+
+    return render_template('profile.html', form=form)
 
 if __name__ == "__main__":
     app.run()
