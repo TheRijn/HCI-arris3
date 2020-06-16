@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, DateField, IntegerField, FloatField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, DateField, IntegerField, FloatField, SelectField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, NumberRange
 
 from models import User
@@ -38,3 +38,15 @@ class AddWeightForm(FlaskForm):
     weight = FloatField("Weight", validators=[NumberRange(0, 300, 'Please enter your weight in kg.')], )
 
     submit = SubmitField('Submit')
+
+class LogExerciseForm(FlaskForm):
+    exercise = SelectField('Exercise', coerce=int)
+    reps = IntegerField('Reps')
+
+    submit = SubmitField('Add')
+
+class LogFoodForm(FlaskForm):
+    ingredient = SelectField('Ingredient', coerce=int)
+    grams = IntegerField('Weight (g)')
+
+    submit = SubmitField('Add')
