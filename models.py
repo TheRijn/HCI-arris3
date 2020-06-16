@@ -58,7 +58,7 @@ class Weight(db.Model):
 
     @property
     def as_dict(self):
-        return {'date': self.date.strftime(""), 'weight': float(self.weight)}
+        return {'date': self.date.strftime("%m/%d/%y"), 'weight': float(self.weight)}
 
     def __init__(self, weight):
         self.weight = weight
