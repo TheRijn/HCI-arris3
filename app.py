@@ -6,7 +6,7 @@ from flask_login import LoginManager, login_required, logout_user, current_user,
 from flask_migrate import Migrate
 
 from forms import LoginForm, RegistrationForm, ProfileForm, AddWeightForm
-from models import db, User, Weight, Ingredient, Exercise
+from models import db, User, Weight, Ingredient, Exercise, Steps
 
 app = Flask(__name__)
 
@@ -27,6 +27,7 @@ login_manager.login_view = 'login'
 admin = Admin(app)
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Weight, db.session))
+admin.add_view(ModelView(Steps, db.session))
 admin.add_view(ModelView(Ingredient, db.session))
 admin.add_view(ModelView(Exercise, db.session))
 
@@ -51,7 +52,8 @@ def format_date(value, format="%d %B %Y"):
 @app.route('/')
 @login_required
 def home():
-        return render_template('home.html')
+    weights = current_user.weights
+    return render_template('home.html', weights=weights)
 
 
 @app.route('/login', methods=['GET', 'POST'])

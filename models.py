@@ -17,7 +17,7 @@ class User(db.Model, UserMixin):
     birthday = db.Column(db.Date)
     height = db.Column(db.Integer)
     weights = db.relationship('Weight', back_populates='user', order_by='desc(Weight.date)')
-    points = db.Column(db.Integer)
+    steps = db.relationship('Steps', back_populates='user')
 
     def __init__(self, email):
         self.email = email
@@ -47,6 +47,19 @@ class Weight(db.Model):
 
     def __init__(self, weight):
         self.weight = weight
+
+# TODO: Log ingredients and exercise
+
+class Steps(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User', back_populates='steps')
+    date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    steps = db.Column(db.Integer)
+
+    def __init__(self, steps):
+        self.steps = steps
 
 
 class Ingredient(db.Model):
