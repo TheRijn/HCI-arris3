@@ -54,7 +54,9 @@ def format_date(value, format="%d %B %Y"):
 @app.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-    weights = current_user.weights
+    user: User = current_user
+
+    weights = user.weights_dict()
 
     le_form = LogExerciseForm(prefix='exercise')
     le_form.exercise.choices = [(e.id, e.name) for e in Exercise.query.all()]
@@ -84,7 +86,7 @@ def home():
         flash('Exercise added!')
         return redirect(url_for('home'))
 
-    return render_template('home.html', e_form=le_form, f_form=lf_form)
+    return render_template('home.html', e_form=le_form, f_form=lf_form, weights=weights)
 
 
 @app.route('/login', methods=['GET', 'POST'])

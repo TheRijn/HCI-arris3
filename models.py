@@ -38,6 +38,11 @@ class User(db.Model, UserMixin):
     def current_weight(self):
         return self.weights[0] if self.weights else 0
 
+
+    def weights_dict(self):
+        return [weight.as_dict for weight in self.weights]
+
+
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
@@ -50,6 +55,10 @@ class Weight(db.Model):
 
     date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     weight = db.Column(db.Numeric(scale=2))
+
+    @property
+    def as_dict(self):
+        return {'date': self.date.strftime(""), 'weight': float(self.weight)}
 
     def __init__(self, weight):
         self.weight = weight
