@@ -30,7 +30,7 @@ class User(db.Model, UserMixin):
         return check_password_hash(self.__password_hash, password)
 
     def current_weight(self):
-        return self.weights[0]
+        return self.weights[0] if self.weights else 0
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
