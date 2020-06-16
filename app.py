@@ -1,12 +1,12 @@
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user
 from flask_migrate import Migrate
 
-from forms import LoginForm, RegistrationForm, ProfileForm, AddWeightForm
-from models import db, User, Weight, Ingredient, Exercise, Steps
+from forms import LoginForm, RegistrationForm, ProfileForm, AddWeightForm, LogExerciseForm, LogFoodForm
+from models import db, User, Weight, Ingredient, Exercise, Steps, ExerciseLog, FoodLog
 
 app = Flask(__name__)
 
@@ -30,6 +30,8 @@ admin.add_view(ModelView(Weight, db.session))
 admin.add_view(ModelView(Steps, db.session))
 admin.add_view(ModelView(Ingredient, db.session))
 admin.add_view(ModelView(Exercise, db.session))
+admin.add_view(ModelView(FoodLog, db.session))
+admin.add_view(ModelView(ExerciseLog, db.session))
 
 
 # Flask Bootstrap
@@ -49,12 +51,40 @@ def format_date(value, format="%d %B %Y"):
     return value.strftime(format)
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
+@login_required
 def home():
     weights = current_user.weights
-    
-    
-    return render_template('home.html', weights=weights)
+
+    le_form = LogExerciseForm(prefix='exercise')
+    le_form.exercise.choices = [(e.id, e.name) for e in Exercise.query.all()]
+
+    lf_form = LogFoodForm(prefix='food')
+    lf_form.ingredient.choices = [(i.id, i.name) for i in Ingredient.query.all()]
+
+    if lf_form.submit.data and lf_form.validate_on_submit():
+        food_log = FoodLog(grams=lf_form.grams.data)
+        food_log.user = current_user
+        food_log.ingredient_id = lf_form.ingredient.data
+
+        db.session.add(food_log)
+        db.session.commit()
+
+        flash('Food added!')
+        return redirect(url_for('home'))
+
+    if le_form.submit.data and le_form.validate_on_submit():
+        exercise_log = ExerciseLog(amount=le_form.reps.data)
+        exercise_log.user = current_user
+        exercise_log.exercise_id = le_form.exercise.data
+
+        db.session.add(exercise_log)
+        db.session.commit()
+
+        flash('Exercise added!')
+        return redirect(url_for('home'))
+
+    return render_template('home.html', e_form=le_form, f_form=lf_form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -149,6 +179,15 @@ def add_weight():
 
     return render_template('add_weight.html', form=form)
 
+@app.route('/profile/log-exercise', methods=['POST'])
+@login_required
+def log_exercise():
+    form = LogExerciseForm()
+    print(request.form)
+    if form.validate_on_submit():
+        print(form)
+
+    return redirect(url_for('home'))
 
 if __name__ == "__main__":
     app.run()
