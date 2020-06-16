@@ -1,9 +1,10 @@
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, jsonify
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user
 from flask_migrate import Migrate
+import json
 
 from forms import LoginForm, RegistrationForm, ProfileForm, AddWeightForm
 from models import db, User, Weight, Ingredient, Exercise, Steps
@@ -31,7 +32,6 @@ admin.add_view(ModelView(Steps, db.session))
 admin.add_view(ModelView(Ingredient, db.session))
 admin.add_view(ModelView(Exercise, db.session))
 
-
 # Flask Bootstrap
 Bootstrap(app)
 
@@ -53,7 +53,8 @@ def format_date(value, format="%d %B %Y"):
 @login_required
 def home():
     weights = current_user.weights
-    return render_template('home.html', weights=weights)
+    name = current_user.first_name
+    return render_template('home.html', weights=weights, name=name)
 
 
 @app.route('/login', methods=['GET', 'POST'])
