@@ -72,7 +72,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             var dropdowns = document.querySelectorAll('select')
 
-            dropdowns.forEach(function(dropdown) {
+            dropdowns.forEach(function (dropdown) {
                 var option = document.createElement("option");
                 option.text = "Choose";
                 option.disabled = true;
@@ -82,7 +82,7 @@
             });
 
             document.querySelectorAll('form').forEach((form) =>
-                form.addEventListener('submit', function(event) {
+                form.addEventListener('submit', function (event) {
                     event.preventDefault();
                     let selected = form.querySelector('select').value;
                     if (selected !== "") {
@@ -90,7 +90,7 @@
                     } else {
                         alert('Please select something from the dropdown.')
                     }
-            })
+                })
             )
         })
     </script>
