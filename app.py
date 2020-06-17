@@ -3,7 +3,7 @@ from datetime import datetime, date
 from pathlib import Path
 
 import click
-from flask import Flask, render_template, redirect, url_for, flash, request
+from flask import Flask, render_template, redirect, url_for, flash
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_bootstrap import Bootstrap
@@ -38,7 +38,6 @@ admin.add_view(ModelView(Exercise, db.session))
 admin.add_view(ModelView(FoodLog, db.session))
 admin.add_view(ModelView(ExerciseLog, db.session))
 
-
 # Flask Bootstrap
 Bootstrap(app)
 
@@ -71,7 +70,7 @@ def home():
     lf_form.ingredient.choices = [(i.id, i.name) for i in Ingredient.query.all()]
 
     w_form = AddWeightForm(prefix='weight')
-    
+
     s_form = AddStepsForm(prefix='steps')
 
     if lf_form.submit.data and lf_form.validate_on_submit():
@@ -114,7 +113,8 @@ def home():
         flash('Steps added!')
         return redirect(url_for('home'))
 
-    return render_template('home.html', e_form=le_form, f_form=lf_form, s_form=s_form, w_form=w_form, weights=weights, steps=steps)
+    return render_template('home.html', e_form=le_form, f_form=lf_form, s_form=s_form, w_form=w_form, weights=weights,
+                           steps=steps)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -192,23 +192,6 @@ def edit_profile():
     return render_template('edit_profile.html', form=form)
 
 
-@app.route('/profile/add-weight', methods=['GET', 'POST'])
-@login_required
-def add_weight():
-    form = AddWeightForm()
-
-    if form.validate_on_submit():
-        weight = Weight(form.weight.data)
-        weight.user = current_user
-
-        db.session.add(weight)
-        db.session.commit()
-
-        flash("Weight added")
-        return redirect(url_for('profile'))
-
-    return render_template('add_weight.html', form=form)
-
 @app.cli.command('import')
 def import_data():
     if Path('db/app.db').exists():
@@ -272,6 +255,7 @@ def import_data():
             db.session.add(exercise_log)
         db.session.commit()
 
+
 def create_user():
     user = User(email="user@example.com")
     user.set_password("1234")
@@ -283,6 +267,7 @@ def create_user():
     db.session.commit()
     print("Created user with email: user@example.com and pasword: 1234")
     return user
+
 
 if __name__ == "__main__":
     app.run()

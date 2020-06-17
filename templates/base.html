@@ -19,18 +19,18 @@
 <body>
 {% include 'nav.html' %}
 <main class="container mt-3">
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <div class="alert alert-primary" role="alert">
-            <ul>
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-    {% endif %}
-{% endwith %}
-{% block main %}<h1>Hello, world!</h1>{% endblock %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert alert-primary" role="alert">
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    {% endwith %}
+    {% block main %}<h1>Hello, world!</h1>{% endblock %}
 </main>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->

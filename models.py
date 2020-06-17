@@ -23,7 +23,6 @@ class User(db.Model, UserMixin):
     logged_food = db.relationship('FoodLog', back_populates='user')
     logged_exercises = db.relationship('ExerciseLog', back_populates='user')
 
-
     def __init__(self, email):
         self.email = email
 
@@ -38,13 +37,11 @@ class User(db.Model, UserMixin):
     def current_weight(self):
         return self.weights[0] if self.weights else 0
 
-
     def weights_dict(self):
         return [weight.as_dict for weight in self.weights]
 
     def steps_dict(self):
         return [steps.as_dict for steps in self.steps]
-
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -121,6 +118,7 @@ class ExerciseLog(db.Model):
     @property
     def calories(self):
         return self.amount * self.exercise.kcal_per_rep
+
 
 class Ingredient(db.Model):
     __tablename__ = 'ingredients'

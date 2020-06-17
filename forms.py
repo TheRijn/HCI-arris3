@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, DateField, IntegerField, FloatField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, DateField, IntegerField, FloatField, \
+    SelectField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, NumberRange
 
 from models import User
@@ -29,7 +30,8 @@ class ProfileForm(FlaskForm):
     first_name = StringField('First Name')
     last_name = StringField('Last Name')
     birthday = DateField('Birthday (year-month-day)', render_kw={'placeholder': "1999-10-26"})
-    height = IntegerField('Height (in cm)', validators=[NumberRange(100, 250, 'Please enter your height in cm.')], render_kw={'placeholder': '180'})
+    height = IntegerField('Height (in cm)', validators=[NumberRange(100, 250, 'Please enter your height in cm.')],
+                          render_kw={'placeholder': '180'})
 
     submit = SubmitField('Update')
 
@@ -50,6 +52,7 @@ class LogExerciseForm(FlaskForm):
     reps = IntegerField('Reps')
 
     submit = SubmitField('Add')
+
 
 class LogFoodForm(FlaskForm):
     ingredient = SelectField('Ingredient', coerce=int)

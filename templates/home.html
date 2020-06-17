@@ -18,7 +18,7 @@
         </div>
         <div class="col-12 col-md-6">
             <h3>Previous recorded steps</h3>
-              <div class="ct-chart2 ct-perfect-fourth"></div>
+            <div class="ct-chart2 ct-perfect-fourth"></div>
             {{ wtf.quick_form(s_form, button_map={'steps-submit':'primary'},form_type='inline') }}
         </div>
     </div>
@@ -37,42 +37,42 @@
 {% block script %}
     <script>
         function jsonToChartInput(jsonInput) {
-          seriesArray = [];
-          labelsArray = [];
-          for (var i = 0; i < jsonInput.length; i++) {
-            seriesArray.push(jsonInput[i].series);
-            labelsArray.push(jsonInput[i].labels);
-          }
-          return [seriesArray, labelsArray];
+            seriesArray = [];
+            labelsArray = [];
+            for (var i = 0; i < jsonInput.length; i++) {
+                seriesArray.push(jsonInput[i].series);
+                labelsArray.push(jsonInput[i].labels);
+            }
+            return [seriesArray, labelsArray];
         }
 
         function createChart(chartInput, chartName) {
-          var chart = new Chartist.Line(chartName, {
-            labels: chartInput[1],
-            series: [
-              chartInput[0]
-            ]
+            var chart = new Chartist.Line(chartName, {
+                labels: chartInput[1],
+                series: [
+                    chartInput[0]
+                ]
             }, {
-              fullWidth: true,
-              chartPadding: {
-                right: 40
-            },
-            showArea : true
-          });
+                fullWidth: true,
+                chartPadding: {
+                    right: 40
+                },
+                showArea: true
+            });
 
-          chart.on('draw', function(data) {
-            if(data.type === 'line' || data.type === 'area') {
-              data.element.animate({
-                d: {
-                  begin: 2000 * data.index,
-                  dur: 4000,
-                  from: data.path.clone().scale(1, 0).translate(0, data.chartRect.height()).stringify(),
-                  to: data.path.clone().stringify(),
-                  easing: Chartist.Svg.Easing.easeOutQuint
+            chart.on('draw', function (data) {
+                if (data.type === 'line' || data.type === 'area') {
+                    data.element.animate({
+                        d: {
+                            begin: 2000 * data.index,
+                            dur: 4000,
+                            from: data.path.clone().scale(1, 0).translate(0, data.chartRect.height()).stringify(),
+                            to: data.path.clone().stringify(),
+                            easing: Chartist.Svg.Easing.easeOutQuint
+                        }
+                    });
                 }
-              });
-            }
-          });
+            });
         }
 
 
