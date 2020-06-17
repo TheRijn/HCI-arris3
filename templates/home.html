@@ -52,6 +52,11 @@
 
         function createChart(chartInput, chartName, lineChart) {
             if (lineChart) {
+
+                var options = {
+                  stretch: true
+                };
+
                 var chart = new Chartist.Line(chartName, {
                     labels: chartInput[1],
                     series: [
@@ -84,7 +89,8 @@
                     labels: chartInput[1]
                 }, {
                     donut: true,
-                    showLabel: false
+                    showLabel: false,
+                    donutWidth: 100,
                 });
 
                 chart.on('draw', function (data) {
