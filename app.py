@@ -1,6 +1,7 @@
 from csv import DictReader
 from datetime import datetime, date
 from pathlib import Path
+import sys
 
 import click
 from flask import Flask, render_template, redirect, url_for, flash
@@ -62,6 +63,23 @@ def home():
 
     weights = user.weights_dict()
     steps = user.steps_dict()
+    today = datetime.today()
+    points = []
+    message = "You can still log your current weight and steps to gain points, make over 10000 steps to make even more points."
+    for weight in weights:
+        if (today.strftime("%m/%d/%y") in weight.values()):
+            points.append(40)
+            message = "Try to make more then 10000 steps tommorow to gain the last 20 points."
+            break
+
+    for step in steps:
+        if (today.strftime("%m/%d/%y") in step.values()):
+            points.append(40)
+            message = "Try to make more then 10000 steps tommorow to gain the last 20 points."
+            if (step['series'] > 10000):
+                points.append(20)
+                message = "You've done everything for today. A full one hundred points, be proud!!"
+            break
 
     le_form = LogExerciseForm(prefix='exercise')
     le_form.exercise.choices = [(e.id, e.name) for e in Exercise.query.all()]
@@ -114,7 +132,7 @@ def home():
         return redirect(url_for('home'))
 
     return render_template('home.html', e_form=le_form, f_form=lf_form, s_form=s_form, w_form=w_form, weights=weights,
-                           steps=steps)
+                           steps=steps, points=points, message=message)
 
 
 @app.route('/login', methods=['GET', 'POST'])
