@@ -40,26 +40,34 @@
 {% endblock %}
 {% block script %}
     <script>
-        var weights = {{ weights|tojson }};
-        var weightsarray = [];
-        var datesarray = [];
-        for (var i = 0; i < weights.length; i++) {
-          console.log(i);
-          weightsarray.push(weights[i].weight);
-          datesarray.push(weights[i].date);
+        function jsonToChartInput(jsonInput) {
+          seriesArray = [];
+          labelsArray = [];
+          for (var i = 0; i < jsonInput.length; i++) {
+            seriesArray.push(jsonInput[i].series);
+            labelsArray.push(jsonInput[i].labels);
+          }
+          return [seriesArray, labelsArray];
         }
-        new Chartist.Line('.ct-chart', {
-          labels: datesarray,
-          series: [
-            weightsarray
-          ]
-        }, {
-          fullWidth: true,
-          chartPadding: {
-            right: 40
-          },
-          showArea : true
-        });
+        var weights = jsonToChartInput({{ weights|tojson }});
+
+        function createChart(chartInput) {
+          new Chartist.Line('.ct-chart', {
+            labels: chartInput[1],
+            series: [
+              chartInput[0]
+            ]
+          }, {
+            fullWidth: true,
+            chartPadding: {
+              right: 40
+            },
+            showArea : true
+          });
+        }
+
+        createChart(weights);
+
 
         window.addEventListener('DOMContentLoaded', () => {
             var dropdowns = document.querySelectorAll('select')
