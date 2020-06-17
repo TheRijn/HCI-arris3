@@ -97,6 +97,9 @@
             document.querySelectorAll('form').forEach((form) =>
                 form.addEventListener('submit', function (event) {
                     event.preventDefault();
+                    if (!form.querySelector('select')) {
+                        form.submit();
+                    }
                     let selected = form.querySelector('select').value;
                     if (selected !== "") {
                         form.submit();
