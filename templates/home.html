@@ -12,13 +12,13 @@
     <div class="row">
         <div class="col-12 col-md-6">
             <h3>Previous recorded weights</h3>
-            <div class="ct-chart ct-perfect-fourth"></div>
+            <div class="ct-chart1 ct-perfect-fourth"></div>
 
             <a class="btn btn-primary" href="#">Add</a>
         </div>
         <div class="col-12 col-md-6">
-            <h3>Steps</h3>
-              <div class="ct-chart ct-perfect-fourth"></div>
+            <h3>Previous recorded steps</h3>
+              <div class="ct-chart2 ct-perfect-fourth"></div>
             <a class="btn btn-primary" href="#">Add</a>
         </div>
     </div>
@@ -50,8 +50,8 @@
           return [seriesArray, labelsArray];
         }
 
-        function createChart(chartInput) {
-          new Chartist.Line('.ct-chart', {
+        function createChart(chartInput, chartName) {
+          new Chartist.Line(chartName, {
             labels: chartInput[1],
             series: [
               chartInput[0]
@@ -65,8 +65,11 @@
           });
         }
 
+
         var weights = jsonToChartInput({{ weights|tojson }});
-        createChart(weights);
+        var steps = jsonToChartInput({{ steps|tojson }});
+        createChart(weights, '.ct-chart1');
+        createChart(steps, '.ct-chart2');
 
 
         window.addEventListener('DOMContentLoaded', () => {

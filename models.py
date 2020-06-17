@@ -42,6 +42,9 @@ class User(db.Model, UserMixin):
     def weights_dict(self):
         return [weight.as_dict for weight in self.weights]
 
+    def steps_dict(self):
+        return [steps.as_dict for steps in self.steps]
+
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -75,6 +78,10 @@ class Steps(db.Model):
 
     date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     steps = db.Column(db.Integer)
+
+    @property
+    def as_dict(self):
+        return {'labels': self.date.strftime("%m/%d/%y"), 'series': self.steps}
 
     def __init__(self, steps):
         self.steps = steps

@@ -57,6 +57,7 @@ def home():
     user: User = current_user
 
     weights = user.weights_dict()
+    steps = user.steps_dict()
 
     le_form = LogExerciseForm(prefix='exercise')
     le_form.exercise.choices = [(e.id, e.name) for e in Exercise.query.all()]
@@ -86,7 +87,7 @@ def home():
         flash('Exercise added!')
         return redirect(url_for('home'))
 
-    return render_template('home.html', e_form=le_form, f_form=lf_form, weights=weights)
+    return render_template('home.html', e_form=le_form, f_form=lf_form, weights=weights, steps=steps)
 
 
 @app.route('/login', methods=['GET', 'POST'])
