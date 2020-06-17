@@ -37,7 +37,13 @@ class ProfileForm(FlaskForm):
 class AddWeightForm(FlaskForm):
     weight = FloatField("Weight", validators=[NumberRange(0, 300, 'Please enter your weight in kg.')], )
 
-    submit = SubmitField('Submit')
+    submit = SubmitField('Add')
+
+
+class AddStepsForm(FlaskForm):
+    steps = IntegerField("Steps")
+    submit = SubmitField('Add')
+
 
 class LogExerciseForm(FlaskForm):
     exercise = SelectField('Exercise', coerce=int)

@@ -10,7 +10,7 @@ from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user
 from flask_migrate import Migrate, upgrade
 
-from forms import LoginForm, RegistrationForm, ProfileForm, AddWeightForm, LogExerciseForm, LogFoodForm
+from forms import LoginForm, RegistrationForm, ProfileForm, AddWeightForm, LogExerciseForm, LogFoodForm, AddStepsForm
 from models import db, User, Weight, Ingredient, Exercise, Steps, ExerciseLog, FoodLog
 
 app = Flask(__name__)
@@ -70,6 +70,10 @@ def home():
     lf_form = LogFoodForm(prefix='food')
     lf_form.ingredient.choices = [(i.id, i.name) for i in Ingredient.query.all()]
 
+    w_form = AddWeightForm(prefix='weight')
+    
+    s_form = AddStepsForm(prefix='steps')
+
     if lf_form.submit.data and lf_form.validate_on_submit():
         food_log = FoodLog(grams=lf_form.grams.data)
         food_log.user = current_user
@@ -92,7 +96,25 @@ def home():
         flash('Exercise added!')
         return redirect(url_for('home'))
 
-    return render_template('home.html', e_form=le_form, f_form=lf_form, weights=weights, steps=steps)
+    if w_form.submit.data and w_form.validate_on_submit():
+        weight = Weight(w_form.weight.data)
+        weight.user = current_user
+        db.session.add(weight)
+        db.session.commit()
+
+        flash('Weight added!')
+        return redirect(url_for('home'))
+
+    if s_form.submit.data and s_form.validate_on_submit():
+        steps = Steps(s_form.steps.data)
+        steps.user = current_user
+        db.session.add(steps)
+        db.session.commit()
+
+        flash('Steps added!')
+        return redirect(url_for('home'))
+
+    return render_template('home.html', e_form=le_form, f_form=lf_form, s_form=s_form, w_form=w_form, weights=weights, steps=steps)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -186,16 +208,6 @@ def add_weight():
         return redirect(url_for('profile'))
 
     return render_template('add_weight.html', form=form)
-
-@app.route('/profile/log-exercise', methods=['POST'])
-@login_required
-def log_exercise():
-    form = LogExerciseForm()
-    print(request.form)
-    if form.validate_on_submit():
-        print(form)
-
-    return redirect(url_for('home'))
 
 @app.cli.command('import')
 def import_data():

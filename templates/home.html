@@ -14,12 +14,12 @@
             <h3>Previous recorded weights</h3>
             <div class="ct-chart1 ct-perfect-fourth"></div>
 
-            <a class="btn btn-primary" href="#">Add</a>
+            {{ wtf.quick_form(w_form, button_map={'weight-submit':'primary'},form_type='inline') }}
         </div>
         <div class="col-12 col-md-6">
             <h3>Previous recorded steps</h3>
               <div class="ct-chart2 ct-perfect-fourth"></div>
-            <a class="btn btn-primary" href="#">Add</a>
+            {{ wtf.quick_form(s_form, button_map={'steps-submit':'primary'},form_type='inline') }}
         </div>
     </div>
     <div class="row">
@@ -31,10 +31,6 @@
             <h3>Log Exercises</h3>
             {{ wtf.quick_form(e_form, button_map={'exercise-submit':'primary'},form_type='inline') }}
         </div>
-    </div>
-    <div class="row">
-        <h3>Recommended</h3>
-        x food vs y cal + recomm
     </div>
 
 {% endblock %}
