@@ -11,28 +11,30 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-12 col-md-6">
+        <div class="col-12 col-lg-6 mt-3">
             <h3>Previous recorded weights</h3>
             <div class="ct-chart1 ct-perfect-fourth"></div>
-
-            {{ wtf.quick_form(w_form, button_map={'weight-submit':'primary'}, form_type='inline') }}
+            <h4>Add weight</h4>
+            {{ wtf.quick_form(w_form, button_map={'weight-submit':'primary'}) }}
         </div>
-        <div class="col-12 col-md-6">
+        <div class="col-12 col-lg-6 mt-3">
             <h3>Previous recorded steps</h3>
             <div class="ct-chart2 ct-perfect-fourth"></div>
-            {{ wtf.quick_form(s_form, button_map={'steps-submit':'primary'}, form_type='inline') }}
+            <h4>Add steps</h4>
+            {{ wtf.quick_form(s_form, button_map={'steps-submit':'primary'}) }}
         </div>
     </div>
     <div class="row">
-        <div class="col-12 col-md-6">
+        <div class="col-12 col-md-6 mt-3">
             <h3>Log food</h3>
-            {{ wtf.quick_form(f_form, button_map={'food-submit':'primary'}, form_type='inline') }}
+            {{ wtf.quick_form(f_form, button_map={'food-submit':'primary'}) }}
         </div>
-        <div class="col-12 col-md-6">
+        <div class="col-12 col-md-6 mt-3">
             <h3>Log Exercises</h3>
-            {{ wtf.quick_form(e_form, button_map={'exercise-submit':'primary'}, form_type='inline') }}
+            {{ wtf.quick_form(e_form, button_map={'exercise-submit':'primary'}) }}
         </div>
     </div>
+    <div class="row" id="botton-space"></div>
 
 {% endblock %}
 {% block script %}

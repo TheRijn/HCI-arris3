@@ -17,10 +17,10 @@ Using just pip:
 $ pip install -r requirements.txt
 ```
 
-### Create/update database
+### Fill database with dummy data
 
 ```shell script
-$ flask db upgrade
+$ flask import
 ```
 
 ### Run
