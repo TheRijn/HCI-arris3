@@ -1,9 +1,14 @@
+from csv import DictReader
+from datetime import datetime, date
+from pathlib import Path
+
+import click
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user
-from flask_migrate import Migrate
+from flask_migrate import Migrate, upgrade
 
 from forms import LoginForm, RegistrationForm, ProfileForm, AddWeightForm, LogExerciseForm, LogFoodForm
 from models import db, User, Weight, Ingredient, Exercise, Steps, ExerciseLog, FoodLog
@@ -191,6 +196,81 @@ def log_exercise():
         print(form)
 
     return redirect(url_for('home'))
+
+@app.cli.command('import')
+def import_data():
+    if Path('db/app.db').exists():
+        click.confirm('app.db already exist, want to remove it?', abort=True)
+        Path('db/app.db').unlink()
+
+    upgrade()
+    user = create_user()
+
+    with open("data/steps.csv", 'r') as f:
+        reader = DictReader(f)
+        for line in reader:
+            steps = Steps(steps=line['steps'])
+            steps.date = datetime.fromisoformat(line['datetime'])
+            steps.user = user
+            db.session.add(steps)
+        db.session.commit()
+
+    with open("data/weights.csv", 'r') as f:
+        reader = DictReader(f)
+        for line in reader:
+            weight = Weight(weight=line['weight'])
+            weight.date = datetime.fromisoformat(line['datetime'])
+            weight.user = user
+            db.session.add(weight)
+        db.session.commit()
+
+    with open("data/exercises.csv", 'r') as f:
+        reader = DictReader(f)
+        for line in reader:
+            exercise = Exercise(name=line['name'], kcal_per_rep=line['kcal'])
+            db.session.add(exercise)
+        db.session.commit()
+
+    with open("data/ingredients.csv", 'r') as f:
+        reader = DictReader(f)
+        for line in reader:
+            ingredient = Ingredient(name=line['name'], kcal_per_100_gram=line['kcal'])
+            db.session.add(ingredient)
+        db.session.commit()
+
+    with open("data/food_log.csv", 'r') as f:
+        reader = DictReader(f)
+        for line in reader:
+            food_log = FoodLog()
+            food_log.user = user
+            food_log.ingredient_id = line['ingredient_id']
+            food_log.grams = line['grams']
+            food_log.timestamp = datetime.fromisoformat(line['datetime'])
+            db.session.add(food_log)
+        db.session.commit()
+
+    with open("data/exercise_log.csv", 'r') as f:
+        reader = DictReader(f)
+        for line in reader:
+            exercise_log = ExerciseLog()
+            exercise_log.user = user
+            exercise_log.exercise_id = line['exercise_id']
+            exercise_log.amount = line['amount']
+            food_log.timestamp = datetime.fromisoformat(line['datetime'])
+            db.session.add(exercise_log)
+        db.session.commit()
+
+def create_user():
+    user = User(email="user@example.com")
+    user.set_password("1234")
+    user.first_name = "John"
+    user.last_name = "Appleseed"
+    user.birthday = date(1990, 1, 1)
+    user.height = 180
+    db.session.add(user)
+    db.session.commit()
+    print("Created user with email: user@example.com and pasword: 1234")
+    return user
 
 if __name__ == "__main__":
     app.run()

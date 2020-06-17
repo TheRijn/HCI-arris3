@@ -28,8 +28,8 @@ class RegistrationForm(FlaskForm):
 class ProfileForm(FlaskForm):
     first_name = StringField('First Name')
     last_name = StringField('Last Name')
-    birthday = DateField('Birthday')
-    height = IntegerField('Height', validators=[NumberRange(100, 250, 'Please enter your height in cm.')])
+    birthday = DateField('Birthday (year-month-day)', render_kw={'placeholder': "1999-10-26"})
+    height = IntegerField('Height (in cm)', validators=[NumberRange(100, 250, 'Please enter your height in cm.')], render_kw={'placeholder': '180'})
 
     submit = SubmitField('Update')
 
