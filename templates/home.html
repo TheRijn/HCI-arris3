@@ -15,22 +15,22 @@
             <h3>Previous recorded weights</h3>
             <div class="ct-chart1 ct-perfect-fourth"></div>
 
-            {{ wtf.quick_form(w_form, button_map={'weight-submit':'primary'},form_type='inline') }}
+            {{ wtf.quick_form(w_form, button_map={'weight-submit':'primary'}, form_type='inline') }}
         </div>
         <div class="col-12 col-md-6">
             <h3>Previous recorded steps</h3>
             <div class="ct-chart2 ct-perfect-fourth"></div>
-            {{ wtf.quick_form(s_form, button_map={'steps-submit':'primary'},form_type='inline') }}
+            {{ wtf.quick_form(s_form, button_map={'steps-submit':'primary'}, form_type='inline') }}
         </div>
     </div>
     <div class="row">
         <div class="col-12 col-md-6">
             <h3>Log food</h3>
-            {{ wtf.quick_form(f_form, button_map={'food-submit':'primary'},form_type='inline') }}
+            {{ wtf.quick_form(f_form, button_map={'food-submit':'primary'}, form_type='inline') }}
         </div>
         <div class="col-12 col-md-6">
             <h3>Log Exercises</h3>
-            {{ wtf.quick_form(e_form, button_map={'exercise-submit':'primary'},form_type='inline') }}
+            {{ wtf.quick_form(e_form, button_map={'exercise-submit':'primary'}, form_type='inline') }}
         </div>
     </div>
 
@@ -38,123 +38,122 @@
 {% block script %}
     <script>
 
-      function jsonToChartInput(jsonInput) {
-          seriesArray = [];
-          labelsArray = [];
-          for (var i = 0; i < jsonInput.length; i++) {
-              seriesArray.push(jsonInput[i].series);
-              labelsArray.push(jsonInput[i].labels);
-          }
-          return [seriesArray, labelsArray];
-      }
+        function jsonToChartInput(jsonInput) {
+            seriesArray = [];
+            labelsArray = [];
+            for (var i = 0; i < jsonInput.length; i++) {
+                seriesArray.push(jsonInput[i].series);
+                labelsArray.push(jsonInput[i].labels);
+            }
+            return [seriesArray, labelsArray];
+        }
 
-      function createChart(chartInput, chartName, lineChart) {
-          if (lineChart) {
-            var chart = new Chartist.Line(chartName, {
-                labels: chartInput[1],
-                series: [
-                    chartInput[0]
-                ]
-            }, {
-                fullWidth: true,
-                chartPadding: {
-                    right: 40
-                },
-                showArea: true
-            });
+        function createChart(chartInput, chartName, lineChart) {
+            if (lineChart) {
+                var chart = new Chartist.Line(chartName, {
+                    labels: chartInput[1],
+                    series: [
+                        chartInput[0]
+                    ]
+                }, {
+                    fullWidth: true,
+                    chartPadding: {
+                        right: 40
+                    },
+                    showArea: true
+                });
 
-            chart.on('draw', function (data) {
-                if (data.type === 'line' || data.type === 'area') {
-                    data.element.animate({
-                        d: {
-                            begin: 2000 * data.index,
-                            dur: 4000,
-                            from: data.path.clone().scale(1, 0).translate(0, data.chartRect.height()).stringify(),
-                            to: data.path.clone().stringify(),
-                            easing: Chartist.Svg.Easing.easeOutQuint
+                chart.on('draw', function (data) {
+                    if (data.type === 'line' || data.type === 'area') {
+                        data.element.animate({
+                            d: {
+                                begin: 2000 * data.index,
+                                dur: 4000,
+                                from: data.path.clone().scale(1, 0).translate(0, data.chartRect.height()).stringify(),
+                                to: data.path.clone().stringify(),
+                                easing: Chartist.Svg.Easing.easeOutQuint
+                            }
+                        });
+                    }
+                });
+            } else {
+                var chart = new Chartist.Pie(chartName, {
+                    series: chartInput[0],
+                    labels: chartInput[1]
+                }, {
+                    donut: true,
+                    showLabel: false
+                });
+
+                chart.on('draw', function (data) {
+                    if (data.type === 'slice') {
+                        var pathLength = data.element._node.getTotalLength();
+
+                        data.element.attr({
+                            'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
+                        });
+                        var animationDefinition = {
+                            'stroke-dashoffset': {
+                                id: 'anim' + data.index,
+                                dur: 1000,
+                                from: -pathLength + 'px',
+                                to: '0px',
+                                easing: Chartist.Svg.Easing.easeOutQuint,
+                                fill: 'freeze'
+                            }
+                        };
+                        if (data.index !== 0) {
+                            animationDefinition['stroke-dashoffset'].begin = 'anim' + (data.index - 1) + '.end';
                         }
-                    });
-                }
-            });
-          }
-          else {
-            var chart = new Chartist.Pie(chartName, {
-              series: chartInput[0],
-              labels: chartInput[1]
-            }, {
-              donut: true,
-              showLabel: false
-            });
-
-            chart.on('draw', function(data) {
-              if(data.type === 'slice') {
-                var pathLength = data.element._node.getTotalLength();
-
-                data.element.attr({
-                  'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
+                        data.element.attr({
+                            'stroke-dashoffset': -pathLength + 'px'
+                        });
+                        data.element.animate(animationDefinition, false);
+                    }
                 });
-                var animationDefinition = {
-                  'stroke-dashoffset': {
-                    id: 'anim' + data.index,
-                    dur: 1000,
-                    from: -pathLength + 'px',
-                    to:  '0px',
-                    easing: Chartist.Svg.Easing.easeOutQuint,
-                    fill: 'freeze'
-                  }
-                };
-                if(data.index !== 0) {
-                  animationDefinition['stroke-dashoffset'].begin = 'anim' + (data.index - 1) + '.end';
-                }
-                data.element.attr({
-                  'stroke-dashoffset': -pathLength + 'px'
-                });
-                data.element.animate(animationDefinition, false);
-              }
+            }
+        }
+
+
+        var weights = jsonToChartInput({{ weights|tojson }});
+        var steps = jsonToChartInput({{ steps|tojson }});
+        var points = {{ points }};
+        var difference = points.reduce((a, b) => a + b, 0);
+        if (difference < 100) {
+            points.push(100 - difference);
+        }
+        var pointsData = [points, Array.from(Array(points.length).keys())]
+        createChart(weights, '.ct-chart1', true);
+        createChart(steps, '.ct-chart2', true);
+        createChart(pointsData, '.ct-chart3', false);
+
+
+        window.addEventListener('DOMContentLoaded', () => {
+            var dropdowns = document.querySelectorAll('select')
+
+            dropdowns.forEach(function (dropdown) {
+                var option = document.createElement("option");
+                option.text = "Choose";
+                option.disabled = true;
+                option.selected = true;
+                option.value = "";
+                dropdown.add(option, 0);
             });
-          }
-      }
 
-
-      var weights = jsonToChartInput({{ weights|tojson }});
-      var steps = jsonToChartInput({{ steps|tojson }});
-      var points = {{ points }};
-      var difference = points.reduce((a, b) => a + b, 0);
-      if (difference < 100) {
-        points.push(100 - difference);
-      }
-      var pointsData = [points, Array.from(Array(points.length).keys())]
-      createChart(weights, '.ct-chart1', true);
-      createChart(steps, '.ct-chart2', true);
-      createChart(pointsData, '.ct-chart3', false);
-
-
-      window.addEventListener('DOMContentLoaded', () => {
-          var dropdowns = document.querySelectorAll('select')
-
-          dropdowns.forEach(function (dropdown) {
-              var option = document.createElement("option");
-              option.text = "Choose";
-              option.disabled = true;
-              option.selected = true;
-              option.value = "";
-              dropdown.add(option, 0);
-          });
-
-          document.querySelectorAll('form').forEach((form) =>
-              form.addEventListener('submit', function (event) {
-                  event.preventDefault();
-                  if (!form.querySelector('select')) {
-                      form.submit();
-                  }
-                  let selected = form.querySelector('select').value;
-                  if (selected !== "") {
-                      form.submit();
-                  } else {
-                      alert('Please select something from the dropdown.')
-                  }
-              })
-          )
-      })
+            document.querySelectorAll('form').forEach((form) =>
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    if (!form.querySelector('select')) {
+                        form.submit();
+                    }
+                    let selected = form.querySelector('select').value;
+                    if (selected !== "") {
+                        form.submit();
+                    } else {
+                        alert('Please select something from the dropdown.')
+                    }
+                })
+            )
+        })
     </script>
 {% endblock %}

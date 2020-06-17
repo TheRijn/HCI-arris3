@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 
 import click
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_bootstrap import Bootstrap
@@ -59,6 +59,8 @@ def format_date(value, format="%d %B %Y"):
 @app.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
+    print(request.form)
+
     user: User = current_user
 
     weights = user.weights_dict()
@@ -91,7 +93,7 @@ def home():
 
     s_form = AddStepsForm(prefix='steps')
 
-    if lf_form.submit.data and lf_form.validate_on_submit():
+    if lf_form.ingredient.data and lf_form.validate_on_submit():
         food_log = FoodLog(grams=lf_form.grams.data)
         food_log.user = current_user
         food_log.ingredient_id = lf_form.ingredient.data
@@ -102,7 +104,7 @@ def home():
         flash('Food added!')
         return redirect(url_for('home'))
 
-    if le_form.submit.data and le_form.validate_on_submit():
+    if le_form.exercise.data and le_form.validate_on_submit():
         exercise_log = ExerciseLog(amount=le_form.reps.data)
         exercise_log.user = current_user
         exercise_log.exercise_id = le_form.exercise.data
@@ -113,7 +115,7 @@ def home():
         flash('Exercise added!')
         return redirect(url_for('home'))
 
-    if w_form.submit.data and w_form.validate_on_submit():
+    if w_form.weight.data and w_form.validate_on_submit():
         weight = Weight(w_form.weight.data)
         weight.user = current_user
         db.session.add(weight)
@@ -122,7 +124,7 @@ def home():
         flash('Weight added!')
         return redirect(url_for('home'))
 
-    if s_form.submit.data and s_form.validate_on_submit():
+    if s_form.steps.data and s_form.validate_on_submit():
         steps = Steps(s_form.steps.data)
         steps.user = current_user
         db.session.add(steps)
